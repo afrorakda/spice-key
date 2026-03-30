@@ -39,7 +39,6 @@
         h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
         .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 30px; }
 
-        /* 検索エリア（クリアボタン配置のため相対指定） */
         .search-container {
             position: relative;
             margin-bottom: 25px;
@@ -48,7 +47,7 @@
         .search-box {
             width: 100%;
             padding: 18px;
-            padding-right: 50px; /* クリアボタン用のスペース */
+            padding-right: 65px; /* ボタンサイズに合わせて広げました */
             border: 2px solid var(--accent);
             border-radius: var(--radius);
             background: var(--input-bg);
@@ -63,24 +62,23 @@
         }
         .search-box::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; }
 
-        /* 控えめなクリアボタン */
+        /* クリアボタンの視認性向上 */
         .clear-btn {
             position: absolute;
             right: 15px;
-            bottom: 12px; /* 右下に配置 */
+            bottom: 11px;
             background: none;
             border: none;
-            color: #bbb;
-            font-size: 0.75rem;
-            font-weight: 700;
+            color: #999; /* 一段階濃く */
+            font-size: 0.9rem; /* 大きく調整 */
+            font-weight: 800; /* 太字で強調 */
             cursor: pointer;
-            padding: 5px;
-            display: none; /* 初期は非表示 */
+            padding: 5px 8px;
+            display: none;
         }
         .clear-btn.active { display: block; }
         .clear-btn:active { color: var(--main); }
 
-        /* スパイスリスト */
         .spice-list {
             display: flex;
             flex-direction: column;
@@ -170,7 +168,6 @@
 </div>
 
 <script>
-    // JS埋め込みデータプール (50種類)
     const SPICES = [
         { name: "Cumin", alias: "Jeera", use: "Curry / Meat / Tacos", color: "#d2b48c" },
         { name: "Turmeric", alias: "Kunyit", use: "Coloring / Curry / Anti-inflammatory", color: "#ffd700" },
@@ -200,7 +197,9 @@
         { name: "Mustard Seeds", alias: "Biji Sawi", use: "Pickling / Indian Tempering", color: "#e1ad01" },
         { name: "Sichuan Pepper", alias: "Numbing Pepper", use: "Stir-fry / Numbing Heat / Mapo", color: "#a52a2a" },
         { name: "Smoked Paprika", alias: "Pimentón", use: "BBQ / Smoky depth / Eggs", color: "#800000" },
-        { name: "Vanilla", alias: "Bean/Extract", use: "Desserts / Baking / Aroma", color: "#f3e5ab" }
+        { name: "Vanilla", alias: "Bean/Extract", use: "Desserts / Baking / Aroma", color: "#f3e5ab" },
+        { name: "Lemongrass", alias: "Serai", use: "Tom Yum / Curry / Tea", color: "#adff2f" },
+        { name: "Galangal", alias: "Lengkuas", use: "Thai/Malay Soups / Rendang", color: "#deb887" }
     ];
 
     const spiceList = document.getElementById('spiceList');
@@ -226,14 +225,11 @@
 
     function filterSpices() {
         const query = searchInput.value.toLowerCase();
-        
-        // クリアボタンの表示制御
         if (query.length > 0) {
             clearBtn.classList.add('active');
         } else {
             clearBtn.classList.remove('active');
         }
-
         const filtered = SPICES.filter(spice => 
             spice.name.toLowerCase().includes(query) || 
             spice.alias.toLowerCase().includes(query) ||
@@ -245,11 +241,10 @@
     function clearSearch() {
         searchInput.value = '';
         clearBtn.classList.remove('active');
-        searchInput.focus(); // 入力を全消去後にフォーカスを戻す
-        renderList(SPICES); // リストを元に戻す
+        searchInput.focus();
+        renderList(SPICES);
     }
 
-    // 初期表示
     renderList(SPICES);
 
     function showModal() { document.getElementById('modal').style.display = 'flex'; }
