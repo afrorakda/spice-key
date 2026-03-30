@@ -39,10 +39,16 @@
         h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
         .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 30px; }
 
-        /* 検索窓 */
+        /* 検索エリア（クリアボタン配置のため相対指定） */
+        .search-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
         .search-box {
             width: 100%;
             padding: 18px;
+            padding-right: 50px; /* クリアボタン用のスペース */
             border: 2px solid var(--accent);
             border-radius: var(--radius);
             background: var(--input-bg);
@@ -51,12 +57,28 @@
             color: var(--main) !important;
             box-sizing: border-box;
             outline: none;
-            margin-bottom: 25px;
             -webkit-appearance: none;
             -webkit-text-fill-color: var(--main) !important;
             opacity: 1 !important;
         }
         .search-box::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; }
+
+        /* 控えめなクリアボタン */
+        .clear-btn {
+            position: absolute;
+            right: 15px;
+            bottom: 12px; /* 右下に配置 */
+            background: none;
+            border: none;
+            color: #bbb;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 5px;
+            display: none; /* 初期は非表示 */
+        }
+        .clear-btn.active { display: block; }
+        .clear-btn:active { color: var(--main); }
 
         /* スパイスリスト */
         .spice-list {
@@ -119,7 +141,10 @@
     <h1>Spice Key</h1>
     <p class="subtitle">Quick search for 50+ essential spices.</p>
 
-    <input type="text" class="search-box" id="searchInput" placeholder="Search e.g. Cumin" oninput="filterSpices()">
+    <div class="search-container">
+        <input type="text" class="search-box" id="searchInput" placeholder="Search e.g. Cumin" oninput="filterSpices()">
+        <button class="clear-btn" id="clearBtn" onclick="clearSearch()">clr</button>
+    </div>
 
     <div class="spice-list" id="spiceList"></div>
 
@@ -175,12 +200,12 @@
         { name: "Mustard Seeds", alias: "Biji Sawi", use: "Pickling / Indian Tempering", color: "#e1ad01" },
         { name: "Sichuan Pepper", alias: "Numbing Pepper", use: "Stir-fry / Numbing Heat / Mapo", color: "#a52a2a" },
         { name: "Smoked Paprika", alias: "Pimentón", use: "BBQ / Smoky depth / Eggs", color: "#800000" },
-        { name: "Star Anise", alias: "Bunga Lawang", use: "Chinese Braising / Pho / Stew", color: "#8b4513" },
         { name: "Vanilla", alias: "Bean/Extract", use: "Desserts / Baking / Aroma", color: "#f3e5ab" }
     ];
 
     const spiceList = document.getElementById('spiceList');
     const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
 
     function renderList(list) {
         spiceList.innerHTML = '';
@@ -201,12 +226,27 @@
 
     function filterSpices() {
         const query = searchInput.value.toLowerCase();
+        
+        // クリアボタンの表示制御
+        if (query.length > 0) {
+            clearBtn.classList.add('active');
+        } else {
+            clearBtn.classList.remove('active');
+        }
+
         const filtered = SPICES.filter(spice => 
             spice.name.toLowerCase().includes(query) || 
             spice.alias.toLowerCase().includes(query) ||
             spice.use.toLowerCase().includes(query)
         );
         renderList(filtered);
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        clearBtn.classList.remove('active');
+        searchInput.focus(); // 入力を全消去後にフォーカスを戻す
+        renderList(SPICES); // リストを元に戻す
     }
 
     // 初期表示
