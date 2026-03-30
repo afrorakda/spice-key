@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spice Key</title>
+    
+    <link rel="icon" href="image_47.png">
+    <link rel="apple-touch-icon" href="image_47.png">
+
+    <style>
+        :root {
+            --main: #333;
+            --bg: #fff;
+            --accent: #eee;
+            --input-bg: #fafafa;
+            --radius: 15px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
+        .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 30px; }
+
+        /* 検索窓 */
+        .search-box {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid var(--accent);
+            border-radius: var(--radius);
+            background: var(--input-bg);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--main) !important;
+            box-sizing: border-box;
+            outline: none;
+            margin-bottom: 25px;
+            -webkit-appearance: none;
+            -webkit-text-fill-color: var(--main) !important;
+            opacity: 1 !important;
+        }
+        .search-box::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; }
+
+        /* スパイスリスト */
+        .spice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .spice-card {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: var(--radius);
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .spice-card:active { transform: scale(0.98); }
+
+        .spice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .spice-name { font-size: 1.1rem; font-weight: 800; }
+        .spice-alias { font-size: 0.7rem; color: #999; font-weight: 500; }
+        .spice-use { font-size: 0.85rem; color: #555; font-weight: 600; line-height: 1.4; }
+
+        footer { margin-top: 50px; font-size: 11px; color: #aaa; line-height: 1.8; }
+        .footer-btns { margin-top: 30px; }
+        .kofi-btn {
+            display: inline-block; background: var(--main); color: #fff;
+            padding: 12px 25px; border-radius: var(--radius);
+            text-decoration: none; font-weight: bold; font-size: 14px; margin-bottom: 12px;
+        }
+        .home-btn {
+            display: block; width: 60%; margin: 0 auto; background: var(--accent);
+            color: var(--main); border: none; padding: 10px;
+            border-radius: var(--radius); font-weight: 700; font-size: 13px; cursor: pointer;
+        }
+
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100;
+        }
+        .modal-content {
+            background: #fff; width: 85%; max-width: 320px; padding: 30px;
+            border-radius: var(--radius); text-align: left; position: relative;
+        }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 20px; color: #ccc; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Spice Key</h1>
+    <p class="subtitle">Quick search for 50+ essential spices.</p>
+
+    <input type="text" class="search-box" id="searchInput" placeholder="Search e.g. Cumin" oninput="filterSpices()">
+
+    <div class="spice-list" id="spiceList"></div>
+
+    <div class="footer-btns">
+        <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">☕️buy me a coffee</a>
+        <button class="home-btn" onclick="showModal()">Add to Home Screen</button>
+    </div>
+
+    <footer>
+        <div>No login / No tracking / No ads / Browser only</div>
+        <div>Privacy Policy / afrorakda © 2026</div>
+    </footer>
+</div>
+
+<div id="modal" onclick="hideModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-x" onclick="hideModal()">×</span>
+        <h3>📱 Install</h3>
+        <p>Add to your home screen.</p>
+        <p>🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
+        <p>🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
+    </div>
+</div>
+
+<script>
+    // JS埋め込みデータプール (50種類)
+    const SPICES = [
+        { name: "Cumin", alias: "Jeera", use: "Curry / Meat / Tacos", color: "#d2b48c" },
+        { name: "Turmeric", alias: "Kunyit", use: "Coloring / Curry / Anti-inflammatory", color: "#ffd700" },
+        { name: "Coriander", alias: "Cilantro / Dhania", use: "Garnish / Soup / Curry", color: "#8fbc8f" },
+        { name: "Star Anise", alias: "Bunga Lawang", use: "Meat / Stew / Five Spice", color: "#a0522d" },
+        { name: "Cardamom", alias: "Buah Pelaga", use: "Tea / Sweets / Rice", color: "#98fb98" },
+        { name: "Cinnamon", alias: "Kayu Manis", use: "Baking / Curry / Dessert", color: "#8b4513" },
+        { name: "Cloves", alias: "Cengkih", use: "Meat / Spiced Rice / Tea", color: "#5d4037" },
+        { name: "Paprika", alias: "Red Pepper", use: "Chicken / Stew / Garnish", color: "#cc0000" },
+        { name: "Black Pepper", alias: "Lada Hitam", use: "General Seasoning / Steak", color: "#333333" },
+        { name: "Ginger", alias: "Halia", use: "Seafood / Tea / Digestion", color: "#f5deb3" },
+        { name: "Garlic Powder", alias: "Bawang Putih", use: "Instant Flavor / Meat / Pasta", color: "#fef5e7" },
+        { name: "Chili Flakes", alias: "Red Pepper Flakes", use: "Pizza / Pasta / Heat", color: "#ff4500" },
+        { name: "Nutmeg", alias: "Buah Pala", use: "Sauces / Baking / Potato", color: "#cd853f" },
+        { name: "Saffron", alias: "Kesar", use: "Rice / Paella / Premium Flavor", color: "#ff8c00" },
+        { name: "Fennel", alias: "Jintan Manis", use: "Fish / Pork / Breath Freshener", color: "#90ee90" },
+        { name: "Fenugreek", alias: "Halba", use: "Curry / Maple-like scent / Fish", color: "#daa520" },
+        { name: "Sumac", alias: "Middle Eastern Tang", use: "Salad / Hummus / Acidic kick", color: "#800000" },
+        { name: "Oregano", alias: "Pizza Herb", use: "Pizza / Tomato Sauce / Pasta", color: "#556b2f" },
+        { name: "Basil", alias: "Genovese", use: "Pesto / Pasta / Caprese", color: "#228b22" },
+        { name: "Thyme", alias: "Common Thyme", use: "Roasted Meat / Lemon-scent", color: "#6b8e23" },
+        { name: "Rosemary", alias: "Woody Herb", use: "Lamb / Potatoes / Focaccia", color: "#2e8b57" },
+        { name: "Allspice", alias: "Pimento", use: "Jerk Chicken / Pickling / Baking", color: "#6f4e37" },
+        { name: "Bay Leaf", alias: "Daun Salam", use: "Soups / Stews / Slow-cook", color: "#556b2f" },
+        { name: "Cayenne", alias: "Hot Pepper", use: "Heat / Metabolism / Spicy Sauce", color: "#b22222" },
+        { name: "Mace", alias: "Nutmeg Husk", use: "Creamy Sauces / Baking", color: "#e9967a" },
+        { name: "Mustard Seeds", alias: "Biji Sawi", use: "Pickling / Indian Tempering", color: "#e1ad01" },
+        { name: "Sichuan Pepper", alias: "Numbing Pepper", use: "Stir-fry / Numbing Heat / Mapo", color: "#a52a2a" },
+        { name: "Smoked Paprika", alias: "Pimentón", use: "BBQ / Smoky depth / Eggs", color: "#800000" },
+        { name: "Star Anise", alias: "Bunga Lawang", use: "Chinese Braising / Pho / Stew", color: "#8b4513" },
+        { name: "Vanilla", alias: "Bean/Extract", use: "Desserts / Baking / Aroma", color: "#f3e5ab" }
+    ];
+
+    const spiceList = document.getElementById('spiceList');
+    const searchInput = document.getElementById('searchInput');
+
+    function renderList(list) {
+        spiceList.innerHTML = '';
+        list.forEach(spice => {
+            const card = document.createElement('div');
+            card.className = 'spice-card';
+            card.style.borderLeft = `6px solid ${spice.color}`;
+            card.innerHTML = `
+                <div class="spice-header">
+                    <span class="spice-name">${spice.name}</span>
+                    <span class="spice-alias">${spice.alias}</span>
+                </div>
+                <div class="spice-use">${spice.use}</div>
+            `;
+            spiceList.appendChild(card);
+        });
+    }
+
+    function filterSpices() {
+        const query = searchInput.value.toLowerCase();
+        const filtered = SPICES.filter(spice => 
+            spice.name.toLowerCase().includes(query) || 
+            spice.alias.toLowerCase().includes(query) ||
+            spice.use.toLowerCase().includes(query)
+        );
+        renderList(filtered);
+    }
+
+    // 初期表示
+    renderList(SPICES);
+
+    function showModal() { document.getElementById('modal').style.display = 'flex'; }
+    function hideModal() { document.getElementById('modal').style.display = 'none'; }
+</script>
+
+</body>
+</html>
